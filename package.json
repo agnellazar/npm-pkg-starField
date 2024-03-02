@@ -1,0 +1,27 @@
+{
+  "name": "starfield-ag",
+  "version": "1.0.0",
+  "description": "used to create a starfield in 2d",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/agnellazar/npm-pkg-starField.git"
+  },
+  "keywords": [
+    "2D",
+    "starfield"
+  ],
+  "author": "Agnel Lazar Alappat",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/agnellazar/npm-pkg-starField/issues"
+  },
+  "homepage": "https://github.com/agnellazar/npm-pkg-starField#readme",
+  "dependencies": {
+    "basic-utilities-ag": "^1.0.0",
+    "vector-ag": "^1.0.0"
+  }
+}
