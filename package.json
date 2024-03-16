@@ -2,7 +2,7 @@
   "name": "starfield-ag",
   "version": "1.0.0",
   "description": "used to create a starfield in 2d",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -22,6 +22,7 @@
   "homepage": "https://github.com/agnellazar/npm-pkg-starField#readme",
   "dependencies": {
     "basic-utilities-ag": "^1.0.0",
+    "starfield-ag": "^2.0.0",
     "vector-ag": "^1.0.0"
   }
 }
