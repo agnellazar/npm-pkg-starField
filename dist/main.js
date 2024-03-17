@@ -1,0 +1,1 @@
+(()=>{"use strict";console.log("newEmp",{name:"one",id:1})})();
