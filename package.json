@@ -1,8 +1,9 @@
 {
   "name": "starfield-ag",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "used to create a starfield in 2d",
-  "main": "lib/index.js",
+  "main": "js/cjs/index.js",
+  "module": "js/esm/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "tsc": "tsc -p tsconfig.json && tsc -p tsconfig-cjs.json",
@@ -23,9 +24,11 @@
   },
   "homepage": "https://github.com/agnellazar/npm-pkg-starField#readme",
   "dependencies": {
+    "basic-utilities-ag": "^1.0.1",
     "vector-ag": "4.0.0"
   },
   "devDependencies": {
+    "@types/node": "^20.11.30",
     "webpack": "^5.90.3",
     "webpack-cli": "^5.1.4"
   }
