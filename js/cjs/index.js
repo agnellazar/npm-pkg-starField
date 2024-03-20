@@ -66,7 +66,7 @@ class starField {
         parentDiv.style.zIndex = -1;
         parentDiv.style.height = this.config.height;
         parentDiv.style.width = this.config.width;
-        // parentDiv.style.backgroundColor = 'black';
+        parentDiv.style.backgroundColor = this.config.backgroundColor;
         parentDiv.style.overFlow = 'hidden';
         return parentDiv;
     }

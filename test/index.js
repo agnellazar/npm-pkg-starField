@@ -8,9 +8,10 @@ const config = {
     top: 0,
     height: '100vh',
     // starSize: 100,
-    starCount: 20,
+    starCount: 100,
     velConstant: 0.01,
     sizeConstant: 0,
+    backgroundColor: 'black',
     // center : {x:0, y:0},
     // contentList: ['A','G','N','E','L'],
     // contentList: [
