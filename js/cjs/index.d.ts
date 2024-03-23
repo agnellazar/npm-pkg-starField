@@ -3,9 +3,9 @@ export interface startFieldConfig {
     starCount: number;
     top: number;
     left: number;
-    height: number;
-    width: number;
-    backgroundColor: number;
+    height: string;
+    width: string;
+    backgroundColor: string;
     starSize: number;
     velConstant: number;
     contentList: string[];

@@ -1,6 +1,6 @@
 {
   "name": "starfield-ag",
-  "version": "5.0.2",
+  "version": "5.0.3",
   "description": "used to create a starfield in 2d",
   "main": "js/cjs/index.js",
   "module": "js/esm/index.js",
