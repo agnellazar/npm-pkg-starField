@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.starField = void 0;
+exports.starField_funcs = exports.starField = void 0;
 const Vector2D = require('vector-ag').Vector2D;
 const BasicUtilities = require('basic-utilities-ag').BasicUtilities;
 class starField {
@@ -20,15 +20,17 @@ class starField {
             this.parentDiv = document.getElementById(this.parentDivID);
             this.parentDivWidth = this.parentDiv.offsetWidth;
             this.parentDivHeight = this.parentDiv.offsetHeight;
-            // console.log('parentDivWidth',this.parentDivWidth/2)
-            // console.log('parentDivHeight',this.parentDivHeight/2)
             this.stars = this.createStars([], this.config.starCount);
             this.startAnimation();
         }
     }
     startAnimation() {
-        window.requestAnimationFrame(() => { this.continueAnimation(); });
-        // this.intervalHandle = setInterval(() => {this.updateStars()},this.config.updateInterval);
+        if (this.config.updateInterval) {
+            this.intervalHandle = setInterval(() => { this.updateStars(); }, this.config.updateInterval);
+        }
+        else {
+            window.requestAnimationFrame(() => { this.continueAnimation(); });
+        }
     }
     continueAnimation() {
         this.updateStars();
@@ -42,16 +44,20 @@ class starField {
     }
     createStars(starList, cnt) {
         for (let i = 0; i < cnt; i++) {
-            const newConfig = {};
-            newConfig.W = this.parentDivWidth;
-            newConfig.H = this.parentDivHeight,
-                newConfig.parentDiv = this.parentDiv,
-                newConfig.size = Math.random() * this.config.starSize,
-                newConfig.key = i,
-                newConfig.velConstant = this.config.velConstant,
-                newConfig.center = { x: this.parentDivWidth / 2, y: this.parentDivHeight / 2 },
-                newConfig.content = this.bu.getRandomEle(this.config.contentList),
-                newConfig.sizeConstant = this.config.sizeConstant;
+            const newConfig = {
+                W: this.parentDivWidth,
+                H: this.parentDivHeight,
+                parentDiv: this.parentDiv,
+                size: this.config.starSize,
+                key: String(i),
+                velConstant: this.config.velConstant,
+                center: { x: this.parentDivWidth / 2, y: this.parentDivHeight / 2 },
+                content: this.bu.getRandomEle(this.config.contentList),
+                sizeConstant: this.config.sizeConstant,
+                data: {},
+                setInitialPosition: this.config.setInitialPosition,
+                updatePostion: this.config.updatePostion,
+            };
             const newStar = new star(newConfig);
             newStar.init();
             starList.push(newStar);
@@ -86,6 +92,49 @@ class starField {
     }
 }
 exports.starField = starField;
+exports.starField_funcs = {
+    setInitialPosition: (starObj) => {
+        const W = starObj.config.W / 2;
+        const H = starObj.config.H / 2;
+        const sizeRatio = Math.random();
+        const positionRatio = 1 - sizeRatio;
+        const x = starObj.bu.map(Math.random(), 0, 1, -positionRatio * H / 2, positionRatio * H / 2);
+        const y = starObj.bu.map(Math.random(), 0, 1, -positionRatio * W / 2, positionRatio * W / 2);
+        const newPos = new Vector2D(x, y);
+        starObj.setPos(newPos);
+        starObj.setSize(0);
+        const vel = starObj.bu.map(sizeRatio, 0, 1, 0, starObj.config.velConstant);
+        const sizeInc = starObj.bu.map(sizeRatio, 0, 1, 0, starObj.config.sizeConstant);
+        starObj.config.data.vel = vel;
+        starObj.config.data.sizeInc = sizeInc;
+        starObj.updateCnt = 0;
+    },
+    updatePostion: (starObj) => {
+        const currPos = starObj.getCurPos();
+        if (!starObj.checkOnScreen(currPos.x, currPos.y, starObj.config.W, starObj.config.H)) {
+            starObj.config.setInitialPosition(starObj);
+        }
+        else {
+            //calculating distance from center
+            const distFromCenter = Vector2D.getDist(currPos, Vector2D.origin);
+            //creating distance vector from center
+            const distVecFromCenter = Vector2D.getDistVec2D(Vector2D.origin, currPos);
+            const distVecFromCenter2 = distVecFromCenter.copy();
+            //creating unit vector for distance from center
+            const unitVectorOfDist = distVecFromCenter.mulScaler(1 / distFromCenter);
+            //calculating increment in position
+            const disIncrement = unitVectorOfDist.mulScaler(starObj.config.data.vel * (starObj.updateCnt + 1));
+            //calculating new pos using increment
+            disIncrement.addVec(distVecFromCenter2);
+            const newPos = disIncrement.copy();
+            starObj.setPos(newPos);
+            //setting new size
+            const maxDist = Vector2D.getDist(Vector2D.origin, new Vector2D(starObj.config.W / 2, starObj.config.H / 2));
+            const newSize = starObj.bu.map(distFromCenter, 0, maxDist, 0, starObj.config.sizeConstant * starObj.config.data.sizeInc);
+            starObj.setSize(newSize);
+        }
+    }
+};
 class star {
     constructor(config) {
         this.bu = new BasicUtilities();
@@ -96,69 +145,38 @@ class star {
         this.maxDist = 0;
         this.rotStr = '';
         this.pos = new Vector2D(0, 0);
+        this.updateCnt = 0;
         this.config = config;
-        // this.pos = new Vector2D(this.config.x, this.config.y);
-        this.setNewPos();
         this.rotation = Math.floor(Math.random() * 180);
-        // this.vel = new Vector2D(0,0);
     }
     init() {
         this.div = document.createElement('div');
         this.divId = this.getID(this.config.key);
         this.setMaxDist();
         this.setProps();
-        // this.size = 0;
         this.config.parentDiv.appendChild(this.div);
     }
     setMaxDist() {
         this.maxDist = Vector2D.getDist(Vector2D.origin, this.config.center);
     }
     setProps() {
-        // this.div.innerHTML = '&#9733';
         this.div.innerHTML = this.config.content;
         this.div.style.width = this.config.size + 'px';
         this.div.style.height = this.config.size + 'px';
         this.div.style.fontSize = this.config.size + 'px';
-        // this.div.style.backgroundColor = 'transparent';
         this.div.style.color = 'white';
         this.rotStr = 'rotateZ(' + this.rotation + 'deg)';
         this.div.style.transform = this.rotStr;
         this.div.style.position = 'absolute';
-        // this.div.style.transition = 'top 0.5s linear';
-        // this.div.style.transition = 'left 0.5s linear';
-        this.setPos();
-        // this.div.style.transition = 'background-color '+ aniPace + 's ease';
-        // this.div.style.borderRadius = '50%';
-        // this.div.style.opacity = '0.3';
+        this.config.setInitialPosition(this);
         this.div.setAttribute('id', this.divId);
-    }
-    applyTransform() {
     }
     getID(key) {
         return 'star_' + key;
     }
     update() {
-        let currPos = this.getCurPos();
-        const newVel = this.getVel(currPos);
-        // let newPos = Vector2D.copy(currPos);
-        // newPos = this.updatePosWithVel(newPos,newVel);
-        this.transformPos.addVec(newVel);
-        this.updatePos(this.transformPos);
-        currPos = this.getCurPos();
-        if (!this.checkOnScreen(currPos.x, currPos.y, this.config.W * 1.1, this.config.H * 1.1)) {
-            this.reset();
-        }
-        this.setSize(this.getNewSize(this.pos, this.config.size));
-    }
-    getVel(pos) {
-        let d = Vector2D.copy(pos);
-        // const vel = new Vector2D(d*this.config.velConstant,d*this.config.velConstant);
-        d.mulScaler(this.config.velConstant);
-        return d;
-    }
-    updatePosWithVel(pos, vel) {
-        pos.addVec(vel);
-        return pos;
+        this.config.updatePostion(this);
+        this.updateCnt++;
     }
     updatePos(vec) {
         this.transformPos = new Vector2D(vec.x, vec.y);
@@ -167,28 +185,15 @@ class star {
     }
     getCurPos() {
         const curPos = Vector2D.copy(this.pos);
-        curPos.addVec(this.transformPos);
         return curPos;
     }
-    setPos() {
-        const newPos = Vector2D.copy(this.pos);
-        newPos.addVec(this.config.center);
-        const posTL = this.bu.xy2lt(newPos.x, newPos.y, this.config.W, this.config.H);
+    setPos(newPos) {
+        this.pos = newPos.copy();
+        const newPos2 = newPos.copy();
+        newPos2.addVec(this.config.center);
+        const posTL = this.bu.xy2lt(newPos2.x, newPos2.y, this.config.W, this.config.H);
         this.div.style.top = '' + posTL.top + 'px';
         this.div.style.left = '' + posTL.left + 'px';
-    }
-    moveTo() {
-    }
-    reset() {
-        this.setNewPos();
-        this.setPos();
-        this.updatePos(new Vector2D(0, 0));
-        this.size = 0;
-    }
-    setNewPos() {
-        const x = this.config.W * (0.5 - Math.random()) * 0.3;
-        const y = this.config.H * (0.5 - Math.random()) * 0.3;
-        this.pos = new Vector2D(x, y);
     }
     checkOnScreen(x, y, W, H) {
         let res = true;
@@ -200,14 +205,9 @@ class star {
         }
         return res;
     }
-    getNewSize(pos, maxSize) {
-        this.size += this.config.sizeConstant;
-        return this.size;
-    }
     setSize(size) {
-        // console.log('size',size)
-        // this.div.style.fontSize = 10 + 'px';
-        // this.div.style.height = size + 'px';
+        this.size = size;
+        this.div.style.fontSize = size + 'px';
     }
     destroy() {
         this.config.parentDiv.removeChild(this.div);
