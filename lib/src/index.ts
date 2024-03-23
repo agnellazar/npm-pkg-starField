@@ -13,8 +13,8 @@ export interface startFieldConfig {
     contentList:string[],
     sizeConstant:number,
     updateInterval:number,
-    setInitialPosition:(star:star)=>{},
-    updatePostion:(star:star)=>{},
+    setInitialPosition:(star:star)=>void,
+    updatePostion:(star:star)=>void,
 }
 
 export class starField{
@@ -142,8 +142,8 @@ interface starConfig {
     velConstant:number,
     key:string,
     data: any,
-    setInitialPosition:(star:star)=>{},
-    updatePostion:(star:star)=>{},
+    setInitialPosition:(star:star)=>void,
+    updatePostion:(star:star)=>void,
 }
 
 export const starField_funcs = {
