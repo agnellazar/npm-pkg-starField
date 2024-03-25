@@ -9,7 +9,7 @@ interface preLoadedFunctions {
 interface allPreLoadedFunctions {
     [key:string]:preLoadedFunctions
 }
-export const functions:allPreLoadedFunctions = {
+export const predefinedFunctions:allPreLoadedFunctions = {
 
     starField: {
         setInitialPosition: (starObj:star)=>{
