@@ -49,11 +49,7 @@ interface starConfig {
     setInitialPosition: (star: star) => void;
     updatePostion: (star: star) => void;
 }
-export declare const starField_funcs: {
-    setInitialPosition: (starObj: star) => void;
-    updatePostion: (starObj: star) => void;
-};
-declare class star {
+export declare class star {
     config: starConfig;
     rotation: number;
     bu: any;
