@@ -145,64 +145,7 @@ interface starConfig {
     setInitialPosition:(star:star)=>void,
     updatePostion:(star:star)=>void,
 }
-
-export const starField_funcs = {
-    setInitialPosition: (starObj:star)=>{
-        const W = starObj.config.W/2;
-        const H = starObj.config.H/2;
-        const sizeRatio = Math.random();
-
-        const positionRatio = 1-sizeRatio;
-        const x = starObj.bu.map(Math.random(),0,1,-positionRatio*H/2,positionRatio*H/2,) ;
-        const y = starObj.bu.map(Math.random(),0,1,-positionRatio*W/2,positionRatio*W/2,) ;
-
-        
-        const newPos = new Vector2D(x,y);
-        starObj.setPos(newPos);
-        starObj.setSize(0);
-
-
-        const vel = starObj.bu.map(sizeRatio,0,1,0,starObj.config.velConstant);
-        const sizeInc = starObj.bu.map(sizeRatio,0,1,0,starObj.config.sizeConstant);
-        starObj.config.data.vel = vel;
-        starObj.config.data.sizeInc = sizeInc;
-        starObj.updateCnt = 0;
-    },
-
-    updatePostion:(starObj:star) => {
-        const currPos = starObj.getCurPos();
-
-        
-        if(!starObj.checkOnScreen(currPos.x,currPos.y,starObj.config.W, starObj.config.H)){
-            starObj.config.setInitialPosition(starObj);
-        } else {
-
-            //calculating distance from center
-            const distFromCenter = Vector2D.getDist(currPos,Vector2D.origin);
-
-            //creating distance vector from center
-            const distVecFromCenter = Vector2D.getDistVec2D(Vector2D.origin,currPos);
-            const distVecFromCenter2 = distVecFromCenter.copy();
-
-            //creating unit vector for distance from center
-            const unitVectorOfDist = distVecFromCenter.mulScaler(1/distFromCenter);
-            
-            //calculating increment in position
-            const disIncrement = unitVectorOfDist.mulScaler (starObj.config.data.vel * (starObj.updateCnt+1));
-            
-            //calculating new pos using increment
-            disIncrement.addVec(distVecFromCenter2);
-            const newPos = disIncrement.copy();
-            starObj.setPos(newPos);
-
-            //setting new size
-            const maxDist = Vector2D.getDist(Vector2D.origin, new Vector2D(starObj.config.W/2,starObj.config.H/2));
-            const newSize = starObj.bu.map(distFromCenter,0,maxDist,0,starObj.config.sizeConstant*starObj.config.data.sizeInc);
-            starObj.setSize(newSize);
-        }
-    }
-}
-class star {
+export class star {
     public config:starConfig;
     public rotation:number;
     public bu = new BasicUtilities();
