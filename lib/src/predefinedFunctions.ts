@@ -1,4 +1,4 @@
-import { star } from "./index";
+import { star } from "./starField";
 const Vector2D = require('vector-ag').Vector2D
 
 interface preLoadedFunctions {

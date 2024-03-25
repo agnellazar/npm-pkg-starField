@@ -1,4 +1,4 @@
-import { star } from "./index";
+import { star } from "./starField";
 interface preLoadedFunctions {
     setInitialPosition: (starObj: star) => void;
     updatePostion: (starObj: star) => void;
